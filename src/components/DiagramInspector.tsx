@@ -4,6 +4,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import NodeTree from "./NodeTree";
 
 const DiagramInspector: React.FC = () => {
   const [collapsed, setCollapsed] = useState({
@@ -48,7 +49,7 @@ const DiagramInspector: React.FC = () => {
           collapsible
           onCollapse={() => handleCollapse("tree")}
         >
-          {renderPanel("Diagram Elements", <h1 />)}
+          {renderPanel("Nodes Tree", <NodeTree />)}
         </ResizablePanel>
 
         <ResizableHandle />

@@ -62,7 +62,8 @@ export const BuilderProvider = ({
     }
 
     sendTimeout.current = setTimeout(async () => {
-      const xmlString = currentBuilder.tree.toXml();
+      const xmlString = currentBuilder?.tree?.toXml();
+      if (!xmlString) return;
 
       if (lastXmlHash.current === currentBuilder.hash) {
         console.log("XML unchanged (hash matched), not sending to Draw.io");
