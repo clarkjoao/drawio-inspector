@@ -1,11 +1,11 @@
 import "./App.css";
-import { TabsDemo } from "./components/tabs";
+import FloatingButton from "./components/FloatingButton";
 
 function App() {
   return (
     <>
       <h1 className="text-3xl font-bold underline">Hello world!</h1>
-      <TabsDemo />
+      <FloatingButton />
     </>
   );
 }
