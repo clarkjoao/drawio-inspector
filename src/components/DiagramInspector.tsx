@@ -4,7 +4,6 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const DiagramInspector: React.FC = () => {
   const [collapsed, setCollapsed] = useState({

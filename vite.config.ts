@@ -4,11 +4,18 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 // https://vite.dev/config/
-export default defineConfig({
-  plugins: [react(), tailwindcss()],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
+export default defineConfig(({ mode }) => {
+  const isPlugin = mode === "plugin";
+  return {
+    plugins: [react(), tailwindcss()],
+    define: {
+      "import.meta.env.AS_PLUGIN": JSON.stringify(isPlugin),
+      "process.env.NODE_ENV": JSON.stringify("production"),
     },
-  },
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./src"),
+      },
+    },
+  };
 });

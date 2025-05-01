@@ -1,13 +1,11 @@
-import "./App.css";
-import FloatingButton from "./components/FloatingButton";
+import Index from "./pages/Index";
+import { BuilderProvider } from "./context/BuilderContext";
+import "./index.css";
 
-function App() {
-  return (
-    <>
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
-      <FloatingButton />
-    </>
-  );
-}
+const App = () => (
+  <BuilderProvider>
+    <Index />
+  </BuilderProvider>
+);
 
 export default App;
