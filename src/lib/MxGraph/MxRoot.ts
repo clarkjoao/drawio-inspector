@@ -36,7 +36,7 @@ export class MxRoot {
         root.layers.add(c.id!); // Add to layers set for easy lookup, enforcing uniqueness
       }
     });
-
+    debugger;
     return root;
   }
 

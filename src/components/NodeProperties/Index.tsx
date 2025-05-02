@@ -1,8 +1,12 @@
 import { useBuilder } from "@/context/BuilderContext";
-import { Button } from "./ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { Button } from "../ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { useEffect, useState } from "react";
 import { MxCell } from "@/lib/MxGraph/MxCell";
+import CellPropertyEditor from "./CellPropertyEditor";
+import StyleEditor from "./StyleEditor";
+import { MxStyle } from "@/lib/MxGraph/MxStyle";
+import ObjectWrapperEditor from "./ObjectWrapperEditor";
 
 const NodeProperties: React.FC = () => {
   const { builder, selectedCellIds } = useBuilder();
@@ -17,6 +21,10 @@ const NodeProperties: React.FC = () => {
     );
     setCell(selected ?? null);
   }, [selectedCellIds]);
+
+  if (!cell) {
+    return <h1>waiting</h1>;
+  }
 
   return (
     <div
@@ -39,34 +47,31 @@ const NodeProperties: React.FC = () => {
         </TabsList>
 
         <TabsContent value="properties">
-          {/* <CellPropertyEditor
+          <CellPropertyEditor
             cell={cell}
             onChange={(updatedProperties) => {
-              onUpdate({ ...cell, ...updatedProperties });
+              // onUpdate({ ...cell, ...updatedProperties });
             }}
-          /> */}
-          <h1>properties</h1>
+          />
         </TabsContent>
 
         <TabsContent value="style">
-          {/* <StyleEditor
-            style={cell.style || {}}
+          <StyleEditor
+            style={cell.style || new MxStyle()}
             onChange={(updatedStyle) => {
-              onUpdate({ ...cell, style: updatedStyle });
+              // onUpdate({ ...cell, style: updatedStyle });
             }}
-          /> */}
-          <h1>properties</h1>
+          />
         </TabsContent>
 
         {cell?.wrapper && (
           <TabsContent value="object">
-            {/* <ObjectWrapperEditor
+            <ObjectWrapperEditor
               wrapper={cell.wrapper}
               onChange={(updatedWrapper) => {
-                onUpdate({ ...cell, wrapper: updatedWrapper });
+                // onUpdate({ ...cell, wrapper: updatedWrapper });
               }}
-            /> */}
-            <h1>properties</h1>
+            />
           </TabsContent>
         )}
       </Tabs>

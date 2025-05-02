@@ -15,6 +15,7 @@ const NodeTree: React.FC = () => {
   const rootLayerId = root.defaultLayer?.id || "0";
 
   const nodesByParent: Record<string, MxCell[]> = {};
+
   root.cells.forEach((cell) => {
     const parentId = cell.parent || rootLayerId;
     if (!nodesByParent[parentId]) nodesByParent[parentId] = [];
@@ -95,8 +96,8 @@ const NodeTree: React.FC = () => {
 
   const renderNode = (node: MxCell, level: number = 0): React.ReactNode => {
     if (!node.id) return null;
-
     const isExpanded = expandedNodes.has(node.id);
+    const isSelected = selectedCellIds.includes(node.id);
     const isHiddenOrLocked = node.style?.isLocked || node.style?.isHidden;
     const label = getCellDisplayName(node);
     const children = nodesByParent[node.id] || [];
@@ -111,7 +112,11 @@ const NodeTree: React.FC = () => {
       >
         <div
           className={`flex items-center py-1 px-1 rounded text-sm ${
-            isHiddenOrLocked ? "bg-gray-100 text-red-800" : "hover:bg-gray-100"
+            isSelected
+              ? "bg-blue-100 text-blue-800"
+              : isHiddenOrLocked
+              ? "bg-gray-100 text-red-800"
+              : "hover:bg-gray-100"
           }`}
           draggable
           onDragStart={(e) => handleDragStart(e, node.id!)}
@@ -164,13 +169,8 @@ const NodeTree: React.FC = () => {
     );
   };
 
-  const treeRoots = root.cells.filter((cell) => cell.parent === rootLayerId);
-
-  return (
-    <div className="text-gray-800">
-      {treeRoots.map((rootNode) => renderNode(rootNode))}
-    </div>
-  );
+  const layers = root.cells.filter((cell) => cell.parent === rootLayerId);
+  return <div className="text-gray-800">{layers.map(renderNode)}</div>;
 };
 
 export default NodeTree;

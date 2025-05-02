@@ -1,25 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import NodeTree from "./NodeTree";
-import NodeProperties from "./NodeProperties";
+import NodeProperties from "./NodeProperties/Index";
 
 const DiagramInspector: React.FC = () => {
-  const [collapsed, setCollapsed] = useState({
-    tree: false,
-    props: false,
-    actions: false,
-  });
-
-  const handleCollapse = (key: keyof typeof collapsed) => {
-    return (isCollapsed: boolean, _panelId: string) => {
-      setCollapsed((prev) => ({ ...prev, [key]: isCollapsed }));
-    };
-  };
-
   const renderPanel = (title: string, content: React.ReactNode) => {
     return (
       <div className="relative flex flex-col h-full bg-white overflow-hidden">
@@ -49,7 +37,6 @@ const DiagramInspector: React.FC = () => {
           minSize={25}
           collapsedSize={2}
           collapsible
-          onCollapse={() => handleCollapse("tree")}
         >
           {renderPanel("Nodes Tree", <NodeTree />)}
         </ResizablePanel>
@@ -57,11 +44,10 @@ const DiagramInspector: React.FC = () => {
         <ResizableHandle />
 
         <ResizablePanel
-          defaultSize={25}
-          minSize={25}
+          defaultSize={30}
+          minSize={26}
           collapsedSize={2}
           collapsible
-          onCollapse={() => handleCollapse("props")}
         >
           {renderPanel("Properties", <NodeProperties />)}
         </ResizablePanel>
@@ -73,7 +59,6 @@ const DiagramInspector: React.FC = () => {
           minSize={25}
           collapsedSize={2}
           collapsible
-          onCollapse={() => handleCollapse("actions")}
         >
           {renderPanel("Node Action", <h1 />)}
         </ResizablePanel>

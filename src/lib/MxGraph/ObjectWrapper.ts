@@ -1,7 +1,7 @@
 import { XmlUtils } from "./xml.utils";
 
 export class ObjectWrapper {
-  id?: string;
+  id: string;
   label?: string;
   link?: string;
   tags: string[] = [];
@@ -13,6 +13,10 @@ export class ObjectWrapper {
   originalTag?: "UserObject" | "object";
 
   constructor(props: Partial<ObjectWrapper> = {}) {
+    debugger;
+    if (!props.id) {
+      throw new Error("Object Wrapper must have id");
+    }
     this.id = props.id;
     this.label = props.label;
     this.link = props.link;
@@ -28,7 +32,12 @@ export class ObjectWrapper {
   }
 
   static fromElement(el: Element): ObjectWrapper {
-    const wrapper = new ObjectWrapper();
+    const id = el.getAttribute("id");
+
+    if (!id) {
+      throw new Error("Object Wrapper must have id");
+    }
+    const wrapper = new ObjectWrapper({ id });
 
     const knownAttributes = [
       "id",
@@ -38,7 +47,7 @@ export class ObjectWrapper {
       "tooltip",
       "placeholder",
       "type",
-      "description"
+      "description",
     ];
 
     Array.from(el.attributes).forEach(({ name, value }) => {
@@ -73,10 +82,13 @@ export class ObjectWrapper {
       const tagString = this.tags.join(" ");
       el.setAttribute("tags", XmlUtils.escapeString(tagString));
     }
-    if (this.tooltip) el.setAttribute("tooltip", XmlUtils.escapeString(this.tooltip));
-    if (this.placeholder) el.setAttribute("placeholder", XmlUtils.escapeString(this.placeholder));
+    if (this.tooltip)
+      el.setAttribute("tooltip", XmlUtils.escapeString(this.tooltip));
+    if (this.placeholder)
+      el.setAttribute("placeholder", XmlUtils.escapeString(this.placeholder));
     if (this.type) el.setAttribute("type", XmlUtils.escapeString(this.type));
-    if (this.description) el.setAttribute("description", XmlUtils.escapeString(this.description));
+    if (this.description)
+      el.setAttribute("description", XmlUtils.escapeString(this.description));
 
     Object.entries(this.customAttributes).forEach(([k, v]) => {
       el.setAttribute(k, XmlUtils.escapeString(v));

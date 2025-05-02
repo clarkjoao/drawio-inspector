@@ -69,9 +69,9 @@ export class MxCell {
       const cell = MxCell.fromElement(innerCellEl);
       cell.wrapper = wrapper;
 
-      // Be sure that id is undefined because the wrapper is a parent tag of the cell,
-      // we need to set the cell's parent to undefined
-      cell.id = undefined;
+      // We are seeting id for be more easely work with it, but we need remove id from cell
+      // before convert to xml, because when we have a wrapper, id should be exists only in wrapper
+      cell.id = wrapper.id;
 
       return cell;
     }
@@ -112,10 +112,6 @@ export class MxCell {
   toElement(doc: Document): Element {
     const cellEl = doc.createElement("mxCell");
 
-    if (this.id) {
-      cellEl.setAttribute("id", this.id);
-    }
-
     //NOTE: With this check, some cell with value="" are been removing the attr, need check if can be a problema
     if (!this.wrapper) {
       if (this.value === "") {
@@ -153,6 +149,11 @@ export class MxCell {
 
       wrapperEl.appendChild(cellEl);
       return wrapperEl;
+    }
+
+    // we only set id at cell, if doesnot exists wrapper
+    if (this.id && !this.wrapper) {
+      cellEl.setAttribute("id", this.id);
     }
 
     return cellEl;
