@@ -29,7 +29,7 @@ export class MxGraphModel {
     return new MxGraphModel(root, attrs);
   }
 
-  toXml(): string {
+  toElement(): string {
     const doc = document.implementation.createDocument("", "", null);
     const modelElement = doc.createElement("mxGraphModel");
 

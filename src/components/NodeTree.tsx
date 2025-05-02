@@ -4,7 +4,7 @@ import { useBuilder } from "@/context/BuilderContext";
 import { MxCell } from "@/lib/MxGraph/MxCell";
 
 const NodeTree: React.FC = () => {
-  const { builder } = useBuilder();
+  const { builder, selectedCellIds, setSelectedCellIds } = useBuilder();
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
 
   if (!builder?.tree.root) {
@@ -14,7 +14,6 @@ const NodeTree: React.FC = () => {
   const root = builder.tree.root;
   const rootLayerId = root.defaultLayer?.id || "0";
 
-  // Organize nodes by parent ID for easy tree traversal
   const nodesByParent: Record<string, MxCell[]> = {};
   root.cells.forEach((cell) => {
     const parentId = cell.parent || rootLayerId;
@@ -38,6 +37,19 @@ const NodeTree: React.FC = () => {
 
     if (node.isLayer && !expandedNodes.has(node.id)) {
       toggleNode(node.id);
+    }
+
+    const isMultiSelect =
+      event.shiftKey ||
+      (navigator.platform.includes("Mac") ? event.metaKey : event.ctrlKey);
+
+    if (isMultiSelect) {
+      const newSelection = selectedCellIds.includes(node.id)
+        ? selectedCellIds.filter((id) => id !== node.id)
+        : [...selectedCellIds, node.id];
+      setSelectedCellIds(newSelection);
+    } else {
+      setSelectedCellIds([node.id]);
     }
   };
 

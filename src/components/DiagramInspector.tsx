@@ -5,6 +5,7 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import NodeTree from "./NodeTree";
+import NodeProperties from "./NodeProperties";
 
 const DiagramInspector: React.FC = () => {
   const [collapsed, setCollapsed] = useState({
@@ -45,6 +46,7 @@ const DiagramInspector: React.FC = () => {
       <ResizablePanelGroup direction="horizontal" className="w-full h-full">
         <ResizablePanel
           defaultSize={25}
+          minSize={25}
           collapsedSize={2}
           collapsible
           onCollapse={() => handleCollapse("tree")}
@@ -56,17 +58,19 @@ const DiagramInspector: React.FC = () => {
 
         <ResizablePanel
           defaultSize={25}
+          minSize={25}
           collapsedSize={2}
           collapsible
           onCollapse={() => handleCollapse("props")}
         >
-          {renderPanel("Properties", <h1 />)}
+          {renderPanel("Properties", <NodeProperties />)}
         </ResizablePanel>
 
         <ResizableHandle />
 
         <ResizablePanel
           defaultSize={50}
+          minSize={25}
           collapsedSize={2}
           collapsible
           onCollapse={() => handleCollapse("actions")}

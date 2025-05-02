@@ -1,4 +1,5 @@
 import { MxEvents } from "@/enums/MxEvents";
+import { MxBuilder } from "@/lib/MxGraph/MxBuilder";
 import { MxGraphModel } from "@/lib/MxGraph/MxGraphModel";
 import { calculateHash } from "@/utils/xml";
 import {
@@ -13,12 +14,14 @@ import {
 interface Builder {
   xml: string;
   hash: string;
-  tree: MxGraphModel;
+  tree: MxBuilder;
 }
 
 interface BuilderContextProps {
   builder: Builder | null;
   setBuilder: (xml: string) => void;
+  selectedCellIds: string[];
+  setSelectedCellIds: (cellIds: string[]) => void;
 }
 
 const BuilderContext = createContext<BuilderContextProps | undefined>(
@@ -36,8 +39,10 @@ export const BuilderProvider = ({
   const [builder, setBuilderState] = useState<Builder>({
     xml: "",
     hash: "",
-    tree: {} as MxGraphModel,
+    tree: new MxBuilder(),
   });
+
+  const [selectedCellIds, setSelectedCellIds] = useState<string[]>([]);
 
   const setBuilder = useCallback(
     async (xml: string) => {
@@ -46,7 +51,7 @@ export const BuilderProvider = ({
         console.log("Not changed");
         return;
       }
-      const newTree = MxGraphModel.fromXml(xml);
+      const newTree = MxBuilder.fromXml(xml);
       setBuilderState({
         xml,
         hash: newHash,
@@ -111,6 +116,8 @@ export const BuilderProvider = ({
       value={{
         builder,
         setBuilder,
+        selectedCellIds,
+        setSelectedCellIds,
       }}
     >
       {children}
