@@ -53,13 +53,13 @@ const debounceTimers = new WeakMap<Function, number>();
       case MxEvents.REACT_XML_UPDATE:
         debugger;
         if (typeof payload === "string") {
-          updateModelFromXml(payload);
+          // updateModelFromXml(payload);
         }
         break;
 
       case MxEvents.REACT_SELECT_CELLS:
         if (Array.isArray(payload)) {
-          selectCellsByIds(payload);
+          // selectCellsByIds(payload);
         }
         break;
 
@@ -102,35 +102,6 @@ const debounceTimers = new WeakMap<Function, number>();
     }
   }
 
-  function setupDrag(menu: HTMLElement, header: HTMLElement) {
-    let isDragging = false;
-    let offsetX = 0;
-    let offsetY = 0;
-
-    header.addEventListener("mousedown", (e) => {
-      isDragging = true;
-      offsetX = e.clientX - menu.offsetLeft;
-      offsetY = e.clientY - menu.offsetTop;
-      header.style.cursor = "grabbing";
-    });
-
-    document.addEventListener("mousemove", (e) => {
-      if (isDragging) {
-        menu.style.left = `${e.clientX - offsetX}px`;
-        menu.style.top = `${e.clientY - offsetY}px`;
-      }
-    });
-
-    document.addEventListener("mouseup", () => {
-      if (isDragging) {
-        isDragging = false;
-        header.style.cursor = "move";
-        localStorage.setItem("react-floating-menu-top", menu.style.top);
-        localStorage.setItem("react-floating-menu-left", menu.style.left);
-      }
-    });
-  }
-
   function createFloatingMenuContainer() {
     const rootFloat = document.getElementById("react-root-container");
     if (rootFloat) {
@@ -142,6 +113,8 @@ const debounceTimers = new WeakMap<Function, number>();
 
     Object.assign(floatingMenu.style, {
       position: "absolute",
+      // top: "20px",
+      // left: "20px",
       zIndex: "9998",
     });
 
@@ -166,6 +139,7 @@ const debounceTimers = new WeakMap<Function, number>();
     tryMountReact();
 
     model.addListener(mxEvent.CHANGE, () => debounce(sendXmlToReact, 300));
+
     graph
       .getSelectionModel()
       .addListener(mxEvent.CHANGE, () => debounce(sendSelectionToReact, 300));

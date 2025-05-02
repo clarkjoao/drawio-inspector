@@ -17,16 +17,17 @@ function App() {
 
   return (
     <>
-      <div className="min-h-screen min-w-screen bg-gray-50 flex flex-col">
-        <h1 className="text-3xl font-semibold mb-6 text-gray-900">
-          Draw.io XML Editor
-        </h1>
-        {!isPlugin && (
+      {!isPlugin && (
+        <div className="min-h-screen min-w-screen bg-gray-50 flex flex-col">
+          <h1 className="text-3xl font-semibold mb-6 text-gray-900">
+            Draw.io XML Editor
+          </h1>
+
           <div className="col-span-2 bg-white dark:bg-[#222] border border-gray-200/60 shadow-lg rounded-lg p-4">
             <XMLEditor onExport={handleExport} onParseXml={handleParseXml} />
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       <FloatingButton />
     </>

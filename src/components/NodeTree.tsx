@@ -7,7 +7,7 @@ const NodeTree: React.FC = () => {
   const { builder, selectedCellIds, setSelectedCellIds } = useBuilder();
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
 
-  if (!builder?.tree.root) {
+  if (!builder?.tree?.root) {
     return <div className="text-gray-500 text-sm">Loading builder...</div>;
   }
 

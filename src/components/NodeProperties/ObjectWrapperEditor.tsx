@@ -67,7 +67,7 @@ const ObjectWrapperEditor = ({
     <div className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="label">Label</Label>
-        <Input
+        <Textarea
           id="label"
           value={localWrapper.label || ""}
           onChange={(e) => handleChange("label", e.target.value)}

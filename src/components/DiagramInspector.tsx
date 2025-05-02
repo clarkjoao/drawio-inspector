@@ -41,7 +41,7 @@ const DiagramInspector: React.FC = () => {
           {renderPanel("Nodes Tree", <NodeTree />)}
         </ResizablePanel>
 
-        <ResizableHandle />
+        <ResizableHandle withHandle />
 
         <ResizablePanel
           defaultSize={30}
@@ -52,7 +52,7 @@ const DiagramInspector: React.FC = () => {
           {renderPanel("Properties", <NodeProperties />)}
         </ResizablePanel>
 
-        <ResizableHandle />
+        <ResizableHandle withHandle />
 
         <ResizablePanel
           defaultSize={50}

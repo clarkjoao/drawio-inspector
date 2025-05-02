@@ -13,7 +13,6 @@ export class ObjectWrapper {
   originalTag?: "UserObject" | "object";
 
   constructor(props: Partial<ObjectWrapper> = {}) {
-    debugger;
     if (!props.id) {
       throw new Error("Object Wrapper must have id");
     }

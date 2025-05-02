@@ -58,7 +58,7 @@ const CellPropertyEditor = ({ cell, onChange }: CellPropertyEditorProps) => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="value">Value / Label</Label>
+        <Label htmlFor="value">Value</Label>
         <Textarea
           id="value"
           value={properties.value}
@@ -83,6 +83,28 @@ const CellPropertyEditor = ({ cell, onChange }: CellPropertyEditorProps) => {
           </SelectContent>
         </Select>
       </div>
+
+      {cell.isEdge && (
+        <>
+          <div className="space-y-2">
+            <Label htmlFor="source">Source ID</Label>
+            <Input
+              id="source"
+              value={properties.source}
+              onChange={(e) => handleChange("source", e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="target">Target ID</Label>
+            <Input
+              id="target"
+              value={properties.target}
+              onChange={(e) => handleChange("target", e.target.value)}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };

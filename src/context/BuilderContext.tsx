@@ -86,7 +86,7 @@ export const BuilderProvider = ({
   };
 
   useEffect(() => {
-    if (builder) scheduleSendToDrawio(builder);
+    if (builder?.tree?.root?.cells?.length > 0) scheduleSendToDrawio(builder);
   }, [builder]);
 
   useEffect(() => {
@@ -96,7 +96,7 @@ export const BuilderProvider = ({
       switch (event.data.type) {
         case MxEvents.DRAWIO_XML_UPDATE:
           try {
-            setBuilderState(event.data.payload);
+            setBuilder(event.data.payload);
           } catch (err) {
             console.error("Error processing XML from Draw.io:", err);
           }

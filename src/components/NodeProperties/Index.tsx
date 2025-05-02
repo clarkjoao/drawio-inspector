@@ -36,14 +36,14 @@ const NodeProperties: React.FC = () => {
           <TabsTrigger value="properties" className="flex-1">
             Properties
           </TabsTrigger>
-          <TabsTrigger value="style" className="flex-1">
-            Style
-          </TabsTrigger>
           {cell?.wrapper && (
             <TabsTrigger value="object" className="flex-1">
               Object
             </TabsTrigger>
           )}
+          <TabsTrigger value="style" className="flex-1">
+            Style
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="properties">
@@ -51,15 +51,6 @@ const NodeProperties: React.FC = () => {
             cell={cell}
             onChange={(updatedProperties) => {
               // onUpdate({ ...cell, ...updatedProperties });
-            }}
-          />
-        </TabsContent>
-
-        <TabsContent value="style">
-          <StyleEditor
-            style={cell.style || new MxStyle()}
-            onChange={(updatedStyle) => {
-              // onUpdate({ ...cell, style: updatedStyle });
             }}
           />
         </TabsContent>
@@ -74,6 +65,15 @@ const NodeProperties: React.FC = () => {
             />
           </TabsContent>
         )}
+
+        <TabsContent value="style">
+          <StyleEditor
+            style={cell.style || new MxStyle()}
+            onChange={(updatedStyle) => {
+              // onUpdate({ ...cell, style: updatedStyle });
+            }}
+          />
+        </TabsContent>
       </Tabs>
 
       <div className="flex justify-end gap-2 mt-4">
