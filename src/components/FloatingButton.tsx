@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Maximize, Minimize, X } from "lucide-react";
 import DiagramInspector from "./DiagramInspector";
+import { Button } from "./ui/button";
 // import { CustomElements } from "./CustomElements";
 
 const FloatingButton: React.FC = () => {
@@ -92,18 +93,20 @@ const FloatingButton: React.FC = () => {
           >
             <h2 className="text-sm font-semibold">Diagram Inspector</h2>
             <div className="flex gap-2">
-              <button
-                className="hover:bg-blue-700 p-1 rounded-full"
+              <Button
+                variant="ghost"
+                className="text-white hover:bg-blue-700 p-1 rounded-full"
                 onClick={toggleMinimize}
               >
                 {isMinimized ? <Maximize size={16} /> : <Minimize size={16} />}
-              </button>
-              <button
-                className="hover:bg-blue-700 p-1 rounded-full"
+              </Button>
+              <Button
+                variant="ghost"
+                className="text-white hover:bg-blue-700 p-1 rounded-full"
                 onClick={toggleInspector}
               >
                 <X size={16} />
-              </button>
+              </Button>
             </div>
           </div>
 

@@ -1,19 +1,9 @@
-@import "tailwindcss";
+@import "tailwindcss" important;
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   --radius: 0.625rem;
@@ -62,7 +52,6 @@
     background-color: #f9f9f9;
   }
 }
-
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -136,10 +125,10 @@
 }
 
 @layer base {
-  * {
+  #react-root-container * {
     @apply border-border outline-ring/50;
   }
-  body {
+  #react-root-container {
     @apply bg-background text-foreground;
   }
 }

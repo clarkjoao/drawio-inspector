@@ -44,8 +44,8 @@ const DiagramInspector: React.FC = () => {
         <ResizableHandle withHandle />
 
         <ResizablePanel
-          defaultSize={30}
-          minSize={26}
+          defaultSize={25}
+          minSize={25}
           collapsedSize={2}
           collapsible
         >
@@ -55,7 +55,7 @@ const DiagramInspector: React.FC = () => {
         <ResizableHandle withHandle />
 
         <ResizablePanel
-          defaultSize={50}
+          defaultSize={25}
           minSize={25}
           collapsedSize={2}
           collapsible

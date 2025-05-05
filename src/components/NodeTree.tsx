@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ChevronRight, ChevronDown, Layers, Folder, File } from "lucide-react";
 import { useBuilder } from "@/context/BuilderContext";
 import { MxCell } from "@/lib/MxGraph/MxCell";
+import { Button } from "./ui/button";
 
 const NodeTree: React.FC = () => {
   const { builder, selectedCellIds, setSelectedCellIds } = useBuilder();
@@ -118,7 +119,7 @@ const NodeTree: React.FC = () => {
               ? "bg-gray-100 text-red-800"
               : "hover:bg-gray-100"
           }`}
-          draggable
+          draggable={false}
           onDragStart={(e) => handleDragStart(e, node.id!)}
         >
           <div

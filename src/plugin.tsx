@@ -51,15 +51,14 @@ const debounceTimers = new WeakMap<Function, number>();
 
     switch (type) {
       case MxEvents.REACT_XML_UPDATE:
-        debugger;
         if (typeof payload === "string") {
-          // updateModelFromXml(payload);
+          updateModelFromXml(payload);
         }
         break;
 
       case MxEvents.REACT_SELECT_CELLS:
         if (Array.isArray(payload)) {
-          // selectCellsByIds(payload);
+          selectCellsByIds(payload);
         }
         break;
 
