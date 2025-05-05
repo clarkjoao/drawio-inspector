@@ -11,6 +11,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { MxCell } from "@/lib/MxGraph/MxCell";
 import { Textarea } from "../ui/textarea";
+import { useBuilder } from "@/context/BuilderContext";
 
 interface CellPropertyEditorProps {
   cell: MxCell;
@@ -18,6 +19,7 @@ interface CellPropertyEditorProps {
 }
 
 const CellPropertyEditor = ({ cell, onChange }: CellPropertyEditorProps) => {
+  const { builder } = useBuilder();
   const [properties, setProperties] = useState<Partial<MxCell>>({
     id: cell.id || "",
     value: cell.value || "",
@@ -38,13 +40,16 @@ const CellPropertyEditor = ({ cell, onChange }: CellPropertyEditorProps) => {
       source: cell.source || "",
       target: cell.target || "",
     });
-  }, [cell]);
+  }, [cell?.id]);
 
   const handleChange = (key: keyof MxCell, value: any) => {
     const updatedProperties = { ...properties, [key]: value };
     setProperties(updatedProperties);
     onChange(updatedProperties);
   };
+
+  const parentIdList = builder?.tree.listAllowParentIds();
+  const cellConnectables = builder?.tree.listAllowConnectables();
 
   return (
     <div className="space-y-4">
@@ -68,40 +73,71 @@ const CellPropertyEditor = ({ cell, onChange }: CellPropertyEditorProps) => {
 
       <Separator />
 
-      <div className="space-y-2">
-        <Label htmlFor="parent">Parent ID</Label>
-        <Select
-          value={properties.vertex}
-          onValueChange={(value) => handleChange("vertex", value as "0" | "1")}
-        >
-          <SelectTrigger id="vertex">
-            <SelectValue placeholder="Select..." />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="1">Yes</SelectItem>
-            <SelectItem value="0">No</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      {!cell.isLayer && (
+        <div className="space-y-2">
+          <Label htmlFor="parent">Parent ID</Label>
+          <Select
+            value={properties.parent}
+            disabled={!parentIdList}
+            onValueChange={(value) => handleChange("parent", value)}
+          >
+            <SelectTrigger id="vertex">
+              <SelectValue placeholder={"Select..."} />
+            </SelectTrigger>
+            <SelectContent>
+              {parentIdList?.map((cell) => {
+                const id = cell.getId;
+                const label = cell.getLabel;
+
+                return <SelectItem value={id}>{label || id}</SelectItem>;
+              })}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       {cell.isEdge && (
         <>
           <div className="space-y-2">
             <Label htmlFor="source">Source ID</Label>
-            <Input
-              id="source"
+            <Select
               value={properties.source}
-              onChange={(e) => handleChange("source", e.target.value)}
-            />
+              disabled={!parentIdList}
+              onValueChange={(value) => handleChange("source", value)}
+            >
+              <SelectTrigger id="vertex">
+                <SelectValue placeholder={"Select..."} />
+              </SelectTrigger>
+              <SelectContent>
+                {cellConnectables?.map((cell) => {
+                  const id = cell.getId;
+                  const label = cell.getLabel;
+
+                  return <SelectItem value={id}>{label || id}</SelectItem>;
+                })}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="target">Target ID</Label>
-            <Input
-              id="target"
+            <Select
               value={properties.target}
-              onChange={(e) => handleChange("target", e.target.value)}
-            />
+              disabled={!parentIdList}
+              onValueChange={(value) => handleChange("source", value)}
+            >
+              <SelectTrigger id="vertex">
+                <SelectValue placeholder={"Select..."} />
+              </SelectTrigger>
+              <SelectContent>
+                {cellConnectables?.map((cell) => {
+                  const id = cell.getId;
+                  const label = cell.getLabel;
+
+                  return <SelectItem value={id}>{label || id}</SelectItem>;
+                })}
+              </SelectContent>
+            </Select>
           </div>
         </>
       )}

@@ -37,4 +37,14 @@ export class MxBuilder {
       return cellValue === value;
     });
   }
+
+  listAllowParentIds() {
+    return this.model.root.cells.filter((cell) => cell.isGroup || cell.isLayer);
+  }
+
+  listAllowConnectables() {
+    return this.model.root.cells.filter(
+      (cell) => cell.isVertex && !cell.isEdge && !cell.isGroup && !cell.isLayer
+    );
+  }
 }

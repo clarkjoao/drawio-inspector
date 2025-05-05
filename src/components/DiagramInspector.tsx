@@ -54,14 +54,14 @@ const DiagramInspector: React.FC = () => {
 
         <ResizableHandle withHandle />
 
-        <ResizablePanel
+        {/* <ResizablePanel
           defaultSize={25}
           minSize={25}
           collapsedSize={2}
           collapsible
         >
           {renderPanel("Node Action", <h1 />)}
-        </ResizablePanel>
+        </ResizablePanel> */}
       </ResizablePanelGroup>
     </div>
   );

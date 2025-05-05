@@ -37,6 +37,41 @@ export class MxCell {
     }
   }
 
+  get getId(): string {
+    return this.wrapper?.id ?? this.id ?? "";
+  }
+
+  get getLabel(): string {
+    if (this.wrapper?.label && this.wrapper.label.trim() !== "") {
+      return this.wrapper.label.trim();
+    }
+
+    if (
+      this.wrapper?.customAttributes["label"] &&
+      this.wrapper.customAttributes["label"].trim() !== ""
+    ) {
+      return this.wrapper.customAttributes["label"].trim();
+    }
+
+    if (typeof this.value === "string" && this.value.trim() !== "") {
+      return this.value.trim();
+    }
+
+    if (this.style?.shape) {
+      return this.style.shape;
+    }
+
+    if (this.isGroup) {
+      return `Group - ${this.id}`;
+    }
+
+    if (this.isLayer && !this.wrapper?.label) {
+      return "Background"; // default name by drawio
+    }
+
+    return this.getId; // if we can not defined any name, i sent id
+  }
+
   get isVertex(): boolean {
     return this.vertex === "1";
   }

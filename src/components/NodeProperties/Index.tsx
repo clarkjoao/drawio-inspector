@@ -7,6 +7,7 @@ import CellPropertyEditor from "./CellPropertyEditor";
 import StyleEditor from "./StyleEditor";
 import { MxStyle } from "@/lib/MxGraph/MxStyle";
 import ObjectWrapperEditor from "./ObjectWrapperEditor";
+import { ObjectWrapper } from "@/lib/MxGraph/ObjectWrapper";
 
 const NodeProperties: React.FC = () => {
   const { builder, selectedCellIds } = useBuilder();
@@ -26,6 +27,8 @@ const NodeProperties: React.FC = () => {
     return <h1>waiting</h1>;
   }
 
+  const showObjectPanel = cell?.wrapper || !cell.isLayer || false;
+
   return (
     <div
       className="p-4 bg-white overflow-y-auto"
@@ -36,7 +39,7 @@ const NodeProperties: React.FC = () => {
           <TabsTrigger value="properties" className="flex-1">
             Properties
           </TabsTrigger>
-          {cell?.wrapper && (
+          {showObjectPanel && (
             <TabsTrigger value="object" className="flex-1">
               Object
             </TabsTrigger>
@@ -55,10 +58,10 @@ const NodeProperties: React.FC = () => {
           />
         </TabsContent>
 
-        {cell?.wrapper && (
+        {showObjectPanel && (
           <TabsContent value="object">
             <ObjectWrapperEditor
-              wrapper={cell.wrapper}
+              wrapper={cell.wrapper || new ObjectWrapper({ id: cell.id })}
               onChange={(updatedWrapper) => {
                 // onUpdate({ ...cell, wrapper: updatedWrapper });
               }}

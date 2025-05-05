@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ChevronRight, ChevronDown, Layers, Folder, File } from "lucide-react";
 import { useBuilder } from "@/context/BuilderContext";
 import { MxCell } from "@/lib/MxGraph/MxCell";
@@ -16,12 +16,29 @@ const NodeTree: React.FC = () => {
   const rootLayerId = root.defaultLayer?.id || "0";
 
   const nodesByParent: Record<string, MxCell[]> = {};
+  const allCellsById: Record<string, MxCell> = {};
 
   root.cells.forEach((cell) => {
+    if (cell.id) allCellsById[cell.id] = cell;
     const parentId = cell.parent || rootLayerId;
     if (!nodesByParent[parentId]) nodesByParent[parentId] = [];
     nodesByParent[parentId].push(cell);
   });
+
+  // Expand all parents when selection changes
+  useEffect(() => {
+    const newExpanded = new Set(expandedNodes);
+
+    selectedCellIds.forEach((selectedId) => {
+      let current = allCellsById[selectedId];
+      while (current && current.parent && current.parent !== rootLayerId) {
+        newExpanded.add(current.parent);
+        current = allCellsById[current.parent];
+      }
+    });
+
+    setExpandedNodes(newExpanded);
+  }, [selectedCellIds]);
 
   const toggleNode = (nodeId: string) => {
     setExpandedNodes((prev) => {
@@ -36,10 +53,6 @@ const NodeTree: React.FC = () => {
     node: MxCell
   ) => {
     if (!node.id) return;
-
-    if (node.isLayer && !expandedNodes.has(node.id)) {
-      toggleNode(node.id);
-    }
 
     const isMultiSelect =
       event.shiftKey ||
@@ -100,7 +113,7 @@ const NodeTree: React.FC = () => {
     const isExpanded = expandedNodes.has(node.id);
     const isSelected = selectedCellIds.includes(node.id);
     const isHiddenOrLocked = node.style?.isLocked || node.style?.isHidden;
-    const label = getCellDisplayName(node);
+    const label = node.getLabel;
     const children = nodesByParent[node.id] || [];
     const hasChildren = children.length > 0;
 

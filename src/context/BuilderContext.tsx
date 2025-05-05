@@ -42,7 +42,13 @@ export const BuilderProvider = ({
     tree: new MxBuilder(),
   });
 
-  const [selectedCellIds, setSelectedCellIds] = useState<string[]>([]);
+  const [selectedCellIds, _setSelectedCellIds] = useState<{
+    hash: string;
+    ids: string[];
+  }>({
+    hash: "",
+    ids: [],
+  });
 
   const setBuilder = useCallback(
     async (xml: string) => {
@@ -85,9 +91,30 @@ export const BuilderProvider = ({
     }, 200);
   };
 
+  const setSelectedCellIds = useCallback(
+    async (ids: string[]) => {
+      const newHash = await calculateHash(ids.toString());
+      const currHash = selectedCellIds.hash;
+      if (newHash !== currHash) {
+        _setSelectedCellIds({
+          hash: newHash,
+          ids,
+        });
+      }
+    },
+    [selectedCellIds]
+  );
+
   useEffect(() => {
     if (builder?.tree?.root?.cells?.length > 0) scheduleSendToDrawio(builder);
   }, [builder]);
+
+  useEffect(() => {
+    window.postMessage(
+      { type: MxEvents.REACT_SELECT_CELLS, payload: selectedCellIds.ids },
+      "*"
+    );
+  }, [selectedCellIds.hash]);
 
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
@@ -99,6 +126,15 @@ export const BuilderProvider = ({
             setBuilder(event.data.payload);
           } catch (err) {
             console.error("Error processing XML from Draw.io:", err);
+          }
+          break;
+
+        case MxEvents.DRAWIO_SELECTION_CHANGED:
+          const selected = event.data.payload;
+          if (Array.isArray(selected)) {
+            setSelectedCellIds(selected);
+          } else {
+            console.warn("Invalid selection payload", selected);
           }
           break;
 
@@ -116,7 +152,7 @@ export const BuilderProvider = ({
       value={{
         builder,
         setBuilder,
-        selectedCellIds,
+        selectedCellIds: selectedCellIds.ids,
         setSelectedCellIds,
       }}
     >

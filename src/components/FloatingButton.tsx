@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Maximize, Minimize, X } from "lucide-react";
 import DiagramInspector from "./DiagramInspector";
 import { Button } from "./ui/button";
+import { MenubarComponents } from "./MenuBarComponents";
 // import { CustomElements } from "./CustomElements";
 
 const FloatingButton: React.FC = () => {
@@ -112,6 +113,7 @@ const FloatingButton: React.FC = () => {
 
           {!isMinimized && (
             <>
+              <MenubarComponents />
               <DiagramInspector />
             </>
           )}
