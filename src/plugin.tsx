@@ -5,6 +5,7 @@ import App from "@/App";
 import { MxEvents } from "@/enums/MxEvents";
 
 const debounceTimers = new WeakMap<Function, number>();
+let lastSentXml = "";
 
 (window as any).Draw.loadPlugin(function (ui: any) {
   const graph = ui.editor.graph;
@@ -19,9 +20,18 @@ const debounceTimers = new WeakMap<Function, number>();
     debounceTimers.set(callback, newTimer);
   }
 
+  let lastSentXml = "";
+
   function sendXmlToReact() {
     const xmlNode = codec.encode(model);
     const xmlString = mxUtils.getXml(xmlNode);
+
+    if (xmlString === lastSentXml) {
+      console.log("No change in XML, not sending to React");
+      return;
+    }
+
+    lastSentXml = xmlString;
 
     console.log("Sending updated XML to React");
     window.postMessage(
@@ -52,13 +62,13 @@ const debounceTimers = new WeakMap<Function, number>();
     switch (type) {
       case MxEvents.REACT_XML_UPDATE:
         if (typeof payload === "string") {
-          updateModelFromXml(payload);
+          debounce(() => updateModelFromXml(payload), 250);
         }
         break;
 
       case MxEvents.REACT_SELECT_CELLS:
         if (Array.isArray(payload)) {
-          selectCellsByIds(payload);
+          debounce(() => selectCellsByIds(payload), 250);
         }
         break;
 
@@ -137,11 +147,11 @@ const debounceTimers = new WeakMap<Function, number>();
     };
     tryMountReact();
 
-    model.addListener(mxEvent.CHANGE, () => debounce(sendXmlToReact, 300));
+    model.addListener(mxEvent.CHANGE, () => debounce(sendXmlToReact, 500));
 
     graph
       .getSelectionModel()
-      .addListener(mxEvent.CHANGE, () => debounce(sendSelectionToReact, 300));
+      .addListener(mxEvent.CHANGE, () => debounce(sendSelectionToReact, 500));
     window.addEventListener("message", handleIncomingMessage);
   }
 

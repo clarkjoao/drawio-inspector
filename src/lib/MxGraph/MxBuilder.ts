@@ -47,4 +47,11 @@ export class MxBuilder {
       (cell) => cell.isVertex && !cell.isEdge && !cell.isGroup && !cell.isLayer
     );
   }
+
+  listLayers() {
+    const defaultLayerId = this.model.root.defaultLayer.id;
+    return this.model.root.cells.filter(
+      (cell) => cell.isLayer && cell.getId !== defaultLayerId
+    );
+  }
 }

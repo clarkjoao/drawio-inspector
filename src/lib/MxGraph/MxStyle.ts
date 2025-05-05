@@ -121,7 +121,7 @@ export class MxStyle {
     return this.locked === "1";
   }
 
-  set setLocked(value: boolean) {
+  setLocked(value: boolean) {
     this.locked = value ? "1" : "0";
   }
 
@@ -129,7 +129,7 @@ export class MxStyle {
     return this.overflow === "hidden";
   }
 
-  set setHidden(value: boolean) {
+  setHidden(value: boolean) {
     this.overflow = value ? "hidden" : "visible";
   }
 

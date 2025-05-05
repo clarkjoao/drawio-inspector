@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { ChevronRight, ChevronDown, Layers, Folder, File } from "lucide-react";
+import {
+  ChevronRight,
+  ChevronDown,
+  Layers,
+  Folder,
+  File,
+  Lock,
+} from "lucide-react";
 import { useBuilder } from "@/context/BuilderContext";
 import { MxCell } from "@/lib/MxGraph/MxCell";
 import { Button } from "./ui/button";
 
 const NodeTree: React.FC = () => {
-  const { builder, selectedCellIds, setSelectedCellIds } = useBuilder();
+  const { builder, selectedCellIds, setSelectedCellIds, refreshTree } =
+    useBuilder();
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
 
   if (!builder?.tree?.root) {
@@ -72,6 +80,12 @@ const NodeTree: React.FC = () => {
     event.dataTransfer.setData("application/node-id", nodeId);
   };
 
+  const handleLockedLayers = (node: MxCell) => {
+    node.style?.setLocked(false);
+    // I'm not sure if have a better way to refresh the state besides update all tree node;
+    refreshTree();
+  };
+
   const handleDrop = (event: React.DragEvent, targetId: string) => {
     event.preventDefault();
     const sourceId = event.dataTransfer.getData("application/node-id");
@@ -91,14 +105,6 @@ const NodeTree: React.FC = () => {
 
   const getTypeTag = (cell: MxCell) =>
     cell.isLayer ? "Layer" : cell.isGroup ? "Group" : "Node";
-
-  const getCellDisplayName = (cell: MxCell) => {
-    if (typeof cell.value === "string" && cell.value.trim()) return cell.value;
-    if (cell.style?.shape) return cell.style.shape;
-    if (cell.isGroup) return "Group";
-    if (cell.isLayer) return "Background";
-    return "Unnamed";
-  };
 
   const getExtraLabels = (cell: MxCell) => {
     const extras: string[] = [];
@@ -135,20 +141,29 @@ const NodeTree: React.FC = () => {
           draggable={false}
           onDragStart={(e) => handleDragStart(e, node.id!)}
         >
-          <div
-            className="w-5 flex items-center justify-center cursor-pointer"
-            onClick={() => hasChildren && toggleNode(node.id!)}
-          >
-            {hasChildren && (
-              <button className="focus:outline-none">
-                {isExpanded ? (
-                  <ChevronDown size={14} />
-                ) : (
-                  <ChevronRight size={14} />
-                )}
-              </button>
-            )}
-          </div>
+          {isHiddenOrLocked ? (
+            <div
+              className="w-5 flex items-center justify-center cursor-pointer"
+              onClick={() => handleLockedLayers(node)}
+            >
+              <Lock size={14} />
+            </div>
+          ) : (
+            <div
+              className="w-5 flex items-center justify-center cursor-pointer"
+              onClick={() => hasChildren && toggleNode(node.id!)}
+            >
+              {hasChildren && (
+                <button className="focus:outline-none">
+                  {isExpanded ? (
+                    <ChevronDown size={14} />
+                  ) : (
+                    <ChevronRight size={14} />
+                  )}
+                </button>
+              )}
+            </div>
+          )}
 
           <div
             className="ml-1 cursor-pointer flex-grow truncate"
@@ -183,8 +198,12 @@ const NodeTree: React.FC = () => {
     );
   };
 
-  const layers = root.cells.filter((cell) => cell.parent === rootLayerId);
-  return <div className="text-gray-800">{layers.map(renderNode)}</div>;
+  const layers = root.cells
+    .filter((cell) => cell.parent === rootLayerId)
+    .reverse();
+  return (
+    <div className="text-gray-800">{layers.map((el) => renderNode(el))}</div>
+  );
 };
 
 export default NodeTree;

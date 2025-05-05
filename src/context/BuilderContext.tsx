@@ -22,6 +22,7 @@ interface BuilderContextProps {
   setBuilder: (xml: string) => void;
   selectedCellIds: string[];
   setSelectedCellIds: (cellIds: string[]) => void;
+  refreshTree: () => void;
 }
 
 const BuilderContext = createContext<BuilderContextProps | undefined>(
@@ -54,9 +55,10 @@ export const BuilderProvider = ({
     async (xml: string) => {
       const newHash = await calculateHash(xml);
       if (builder.hash === newHash) {
-        console.log("Not changed");
+        console.log("Not changed, skipping builder update");
         return;
       }
+
       const newTree = MxBuilder.fromXml(xml);
       setBuilderState({
         xml,
@@ -66,6 +68,10 @@ export const BuilderProvider = ({
     },
     [builder]
   );
+
+  const refreshTree = () => {
+    setBuilder(builder.tree.toXml());
+  };
 
   const scheduleSendToDrawio = (currentBuilder: Builder) => {
     if (sendTimeout.current) {
@@ -88,7 +94,7 @@ export const BuilderProvider = ({
         "*"
       );
       console.log("XML sent to Draw.io (hash updated)");
-    }, 200);
+    }, 500);
   };
 
   const setSelectedCellIds = useCallback(
@@ -107,7 +113,7 @@ export const BuilderProvider = ({
 
   useEffect(() => {
     if (builder?.tree?.root?.cells?.length > 0) scheduleSendToDrawio(builder);
-  }, [builder]);
+  }, [builder.hash]);
 
   useEffect(() => {
     window.postMessage(
@@ -154,6 +160,7 @@ export const BuilderProvider = ({
         setBuilder,
         selectedCellIds: selectedCellIds.ids,
         setSelectedCellIds,
+        refreshTree,
       }}
     >
       {children}

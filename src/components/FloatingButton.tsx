@@ -74,13 +74,14 @@ const FloatingButton: React.FC = () => {
         style={{ left: `${buttonPosition.x}px`, top: `${buttonPosition.y}px` }}
         onMouseDown={handleButtonMouseDown}
       >
-        <button
+        <Button
+          variant="ghost"
           onClick={toggleInspector}
-          className="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-all duration-200 flex items-center justify-center"
+          className="bg:transparent text-black p-3 rounded-full shadow-lg transition-all duration-200 flex items-center justify-center"
           aria-label="Open Diagram Inspector"
         >
-          <Maximize size={20} />
-        </button>
+          <Maximize size={14} />
+        </Button>
       </div>
 
       {isOpen && (

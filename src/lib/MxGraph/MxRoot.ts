@@ -50,10 +50,59 @@ export class MxRoot {
     this.cells.push(cell);
   }
 
-  remove(cell: MxCell) {
-    const index = this.cells.indexOf(cell);
-    if (index !== -1) {
-      this.cells.splice(index, 1);
+  addBeforeOrAfter(
+    newCell: MxCell,
+    targetId: string,
+    position: "before" | "after"
+  ) {
+    const index = this.cells.findIndex((c) => c.id === targetId);
+    if (index === -1) {
+      throw new Error(`Target cell with id "${targetId}" not found`);
+    }
+
+    if (position === "before") {
+      this.cells.splice(index, 0, newCell);
+    } else if (position === "after") {
+      this.cells.splice(index + 1, 0, newCell);
+    } else {
+      throw new Error(
+        `Invalid position "${position}", expected "before" or "after"`
+      );
+    }
+  }
+
+  remove(
+    cellId: string,
+    options: { recursive: boolean } = { recursive: false }
+  ) {
+    const cell = this.cells.find((c) => c.id === cellId);
+    if (!cell) return;
+
+    const parentId = cell.parent;
+
+    this.cells = this.cells.filter((c) => c !== cell);
+
+    if (options.recursive) {
+      const idsToRemove = new Set([cell.id]);
+
+      let changed = true;
+      while (changed) {
+        changed = false;
+        this.cells.forEach((c) => {
+          if (c.parent && idsToRemove.has(c.parent)) {
+            idsToRemove.add(c.id!);
+            changed = true;
+          }
+        });
+      }
+
+      this.cells = this.cells.filter((c) => !idsToRemove.has(c.id!));
+    } else {
+      this.cells.forEach((c) => {
+        if (c.parent === cell.id) {
+          c.parent = parentId;
+        }
+      });
     }
   }
 }

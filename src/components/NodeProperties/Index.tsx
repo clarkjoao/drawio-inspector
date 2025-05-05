@@ -70,12 +70,13 @@ const NodeProperties: React.FC = () => {
         )}
 
         <TabsContent value="style">
-          <StyleEditor
+          <h1>Not working yet!</h1>
+          {/* <StyleEditor
             style={cell.style || new MxStyle()}
             onChange={(updatedStyle) => {
               // onUpdate({ ...cell, style: updatedStyle });
             }}
-          />
+          /> */}
         </TabsContent>
       </Tabs>
 
