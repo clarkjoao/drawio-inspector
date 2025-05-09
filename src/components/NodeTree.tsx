@@ -6,6 +6,8 @@ import {
   Folder,
   File,
   Lock,
+  ArrowUpToLine,
+  ArrowDownToLine,
 } from "lucide-react";
 import { useBuilder } from "@/context/BuilderContext";
 import { MxCell } from "@/lib/MxGraph/MxCell";
@@ -114,6 +116,21 @@ const NodeTree: React.FC = () => {
     return extras;
   };
 
+  const handleMove = (
+    node: MxCell,
+    targetId: string,
+    position: "before" | "after"
+  ) => {
+    if (!node.id || !targetId) return;
+
+    try {
+      builder.tree.root.movePosition(node.id, position, targetId);
+      refreshTree();
+    } catch (e) {
+      console.error("Error moving node:", e);
+    }
+  };
+
   const renderNode = (node: MxCell, level: number = 0): React.ReactNode => {
     if (!node.id) return null;
     const isExpanded = expandedNodes.has(node.id);
@@ -122,6 +139,12 @@ const NodeTree: React.FC = () => {
     const label = node.getLabel;
     const children = nodesByParent[node.id] || [];
     const hasChildren = children.length > 0;
+
+    const siblinsg = nodesByParent[node.parent!] || [];
+    const nodeSiblingIndex = siblinsg.findIndex((el) => el.id === node.id);
+    const hasNextSibling =
+      nodeSiblingIndex !== -1 && nodeSiblingIndex < siblinsg.length - 1;
+    const hasPrevSibling = nodeSiblingIndex !== -1 && nodeSiblingIndex > 0;
 
     return (
       <div
@@ -187,20 +210,43 @@ const NodeTree: React.FC = () => {
             </div>
             <div className="text-sm font-medium text-gray-800">{label}</div>
           </div>
+
+          {isSelected && (
+            <div className="flex items-end justify-center">
+              <Button
+                disabled={!hasPrevSibling}
+                variant="ghost"
+                onClick={() =>
+                  handleMove(node, siblinsg[nodeSiblingIndex - 1].id!, "after")
+                }
+              >
+                <ArrowUpToLine />
+              </Button>
+              <Button
+                disabled={!hasNextSibling}
+                variant="ghost"
+                onClick={() =>
+                  handleMove(node, siblinsg[nodeSiblingIndex + 1].id!, "before")
+                }
+              >
+                <ArrowDownToLine />
+              </Button>
+            </div>
+          )}
         </div>
 
         {hasChildren && isExpanded && !isHiddenOrLocked && (
           <div className="ml-4">
-            {children.map((child) => renderNode(child, level + 1))}
+            {children.reverse().map((child) => renderNode(child, level + 1))}
           </div>
         )}
       </div>
     );
   };
 
-  const layers = root.cells
-    .filter((cell) => cell.parent === rootLayerId)
-    .reverse();
+  const layers = root.cells.filter(
+    (cell) => cell.parent === rootLayerId && cell.isLayer
+  );
   return (
     <div className="text-gray-800">{layers.map((el) => renderNode(el))}</div>
   );

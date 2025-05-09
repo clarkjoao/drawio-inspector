@@ -1,6 +1,6 @@
 import { MxEvents } from "@/enums/MxEvents";
 import { MxBuilder } from "@/lib/MxGraph/MxBuilder";
-import { MxGraphModel } from "@/lib/MxGraph/MxGraphModel";
+import { debounce } from "@/utils/debouce";
 import { calculateHash } from "@/utils/xml";
 import {
   createContext,
@@ -34,9 +34,7 @@ export const BuilderProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const sendTimeout = useRef<NodeJS.Timeout | null>(null);
   const lastXmlHash = useRef<string | null>(null);
-
   const [builder, setBuilderState] = useState<Builder>({
     xml: "",
     hash: "",
@@ -52,7 +50,7 @@ export const BuilderProvider = ({
   });
 
   const setBuilder = useCallback(
-    async (xml: string) => {
+    debounce(async (xml: string) => {
       const newHash = await calculateHash(xml);
       if (builder.hash === newHash) {
         console.log("Not changed, skipping builder update");
@@ -65,37 +63,32 @@ export const BuilderProvider = ({
         hash: newHash,
         tree: newTree,
       });
-    },
-    [builder]
+    }, 300),
+    [builder.hash]
   );
 
   const refreshTree = () => {
     setBuilder(builder.tree.toXml());
   };
 
-  const scheduleSendToDrawio = (currentBuilder: Builder) => {
-    if (sendTimeout.current) {
-      clearTimeout(sendTimeout.current);
-    }
-
-    sendTimeout.current = setTimeout(async () => {
+  const scheduleSendToDrawio = useCallback(
+    debounce((currentBuilder: Builder) => {
       const xmlString = currentBuilder?.tree?.toXml();
       if (!xmlString) return;
-
       if (lastXmlHash.current === currentBuilder.hash) {
         console.log("XML unchanged (hash matched), not sending to Draw.io");
         return;
       }
 
       lastXmlHash.current = currentBuilder.hash;
-
       window.postMessage(
         { type: MxEvents.REACT_XML_UPDATE, payload: xmlString },
         "*"
       );
       console.log("XML sent to Draw.io (hash updated)");
-    }, 500);
-  };
+    }, 300),
+    []
+  );
 
   const setSelectedCellIds = useCallback(
     async (ids: string[]) => {
@@ -108,7 +101,7 @@ export const BuilderProvider = ({
         });
       }
     },
-    [selectedCellIds]
+    [selectedCellIds.hash]
   );
 
   useEffect(() => {

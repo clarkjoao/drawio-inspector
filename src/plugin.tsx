@@ -1,12 +1,13 @@
-// @ts-nocheck
-import React from "react";
+//@ts-nocheck
 import ReactDOM from "react-dom/client";
 import App from "@/App";
 import { MxEvents } from "@/enums/MxEvents";
 
 const debounceTimers = new WeakMap<Function, number>();
-let lastSentXml = "";
 
+let isEditingInDrawio = false;
+let editingTimeout: ReturnType<typeof setTimeout> | null = null;
+const EDITING_DELAY = 500;
 (window as any).Draw.loadPlugin(function (ui: any) {
   const graph = ui.editor.graph;
   const model = graph.model;
@@ -20,18 +21,9 @@ let lastSentXml = "";
     debounceTimers.set(callback, newTimer);
   }
 
-  let lastSentXml = "";
-
   function sendXmlToReact() {
     const xmlNode = codec.encode(model);
     const xmlString = mxUtils.getXml(xmlNode);
-
-    if (xmlString === lastSentXml) {
-      console.log("No change in XML, not sending to React");
-      return;
-    }
-
-    lastSentXml = xmlString;
 
     console.log("Sending updated XML to React");
     window.postMessage(
@@ -59,16 +51,23 @@ let lastSentXml = "";
 
     if (!type) return;
 
+    if (isEditingInDrawio) {
+      console.warn(
+        `Ignored incoming React message "${type}" because Draw.io is actively editing`
+      );
+      return;
+    }
+
     switch (type) {
       case MxEvents.REACT_XML_UPDATE:
         if (typeof payload === "string") {
-          debounce(() => updateModelFromXml(payload), 250);
+          updateModelFromXml(payload);
         }
         break;
 
       case MxEvents.REACT_SELECT_CELLS:
         if (Array.isArray(payload)) {
-          debounce(() => selectCellsByIds(payload), 250);
+          selectCellsByIds(payload);
         }
         break;
 
@@ -147,11 +146,28 @@ let lastSentXml = "";
     };
     tryMountReact();
 
-    model.addListener(mxEvent.CHANGE, () => debounce(sendXmlToReact, 500));
+    model.addListener(mxEvent.CHANGE, () => {
+      console.log("Detected CHANGE in Draw.io model → updating React");
+      sendXmlToReact();
 
-    graph
-      .getSelectionModel()
-      .addListener(mxEvent.CHANGE, () => debounce(sendSelectionToReact, 500));
+      isEditingInDrawio = true;
+      if (editingTimeout) clearTimeout(editingTimeout);
+      editingTimeout = setTimeout(() => {
+        isEditingInDrawio = false;
+      }, EDITING_DELAY);
+    });
+
+    graph.getSelectionModel().addListener(mxEvent.CHANGE, () => {
+      console.log("Selection changed in Draw.io → updating React");
+      sendSelectionToReact();
+
+      isEditingInDrawio = true;
+      if (editingTimeout) clearTimeout(editingTimeout);
+      editingTimeout = setTimeout(() => {
+        isEditingInDrawio = false;
+      }, EDITING_DELAY);
+    });
+
     window.addEventListener("message", handleIncomingMessage);
   }
 

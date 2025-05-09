@@ -11,6 +11,7 @@ export class ObjectWrapper {
   description?: string;
   customAttributes: Record<string, string>;
   originalTag?: "UserObject" | "object";
+  visible?: "0" | "1";
 
   constructor(props: Partial<ObjectWrapper> = {}) {
     if (!props.id) {
@@ -24,6 +25,7 @@ export class ObjectWrapper {
     this.type = props.type;
     this.description = props.description;
     this.customAttributes = props.customAttributes || {};
+    this.visible = props.visible || undefined;
 
     if (Array.isArray(props.tags)) {
       this.tags = props.tags.map((t) => t.trim()).filter((t) => t.length > 0);
@@ -47,6 +49,7 @@ export class ObjectWrapper {
       "placeholder",
       "type",
       "description",
+      "visible",
     ];
 
     Array.from(el.attributes).forEach(({ name, value }) => {
@@ -77,6 +80,7 @@ export class ObjectWrapper {
 
     if (this.label) el.setAttribute("label", XmlUtils.escapeString(this.label));
     if (this.link) el.setAttribute("link", XmlUtils.escapeString(this.link));
+    if (this.visible) el.setAttribute("visible", this.visible);
     if (this.tags.length > 0) {
       const tagString = this.tags.join(" ");
       el.setAttribute("tags", XmlUtils.escapeString(tagString));

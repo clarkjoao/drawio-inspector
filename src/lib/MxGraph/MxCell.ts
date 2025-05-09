@@ -16,6 +16,7 @@ export class MxCell {
   collapsed?: "0" | "1";
   wrapper?: ObjectWrapper;
   children?: MxGeometry | ObjectWrapper;
+  visible?: "0" | "1";
 
   isLayer = false;
 
@@ -126,6 +127,8 @@ export class MxCell {
       target: el.getAttribute("target") || undefined,
       connectable: el.getAttribute("connectable") as "0" | "1" | undefined,
       collapsed: el.getAttribute("collapsed") as "0" | "1" | undefined,
+      visible:
+        (el.getAttribute("visible") as "0" | "1" | undefined) || undefined,
     });
 
     for (const child of Array.from(el.children)) {
@@ -174,6 +177,7 @@ export class MxCell {
     if (this.source) cellEl.setAttribute("source", this.source);
     if (this.target) cellEl.setAttribute("target", this.target);
     if (this.edge) cellEl.setAttribute("edge", this.edge);
+    if (this.visible) cellEl.setAttribute("visible", this.visible);
 
     if (this.children) {
       cellEl.appendChild(this.children.toElement(doc));

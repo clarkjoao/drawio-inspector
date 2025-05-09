@@ -71,6 +71,81 @@ export class MxRoot {
     }
   }
 
+  findById(id: string): MxCell | undefined {
+    return this.cells.find((c) => c.id === id);
+  }
+
+  getCellsInLayer(layerId: string): MxCell[] {
+    return this.cells.filter((c) => c.parent === layerId);
+  }
+
+  getLayerIds(): string[] {
+    return Array.from(this.layers);
+  }
+
+  getChildren(parentId: string): MxCell[] {
+    return this.cells.filter((c) => c.parent === parentId);
+  }
+
+  getDescendants(parentId: string): MxCell[] {
+    const descendants: MxCell[] = [];
+    const queue = [parentId];
+
+    while (queue.length) {
+      const current = queue.shift()!;
+      const children = this.getChildren(current);
+      descendants.push(...children);
+      queue.push(...children.map((c) => c.id!));
+    }
+    return descendants;
+  }
+
+  isAncestor(ancestorId: string, descendantId: string): boolean {
+    let current = this.findById(descendantId);
+    while (current && current.parent) {
+      if (current.parent === ancestorId) return true;
+      current = this.findById(current.parent);
+    }
+    return false;
+  }
+
+  movePosition(cellId: string, position: "before" | "after", targetId: string) {
+    const fromIndex = this.cells.findIndex((c) => c.id === cellId);
+    const toIndex = this.cells.findIndex((c) => c.id === targetId);
+    debugger;
+    if (fromIndex < 0) {
+      throw new Error(`Cell with id "${cellId}" not found`);
+    }
+    if (toIndex < 0) {
+      throw new Error(`Target cell with id "${targetId}" not found`);
+    }
+
+    if (cellId === targetId) {
+      console.warn(
+        `movePosition: Ignoring move of cell "${cellId}" relative to itself`
+      );
+      return;
+    }
+
+    const [cell] = this.cells.splice(fromIndex, 1); // Remove cell
+
+    // Adjust target index if removal happened before insertion
+    let insertIndex = toIndex;
+    if (fromIndex < toIndex) {
+      insertIndex -= 1;
+    }
+
+    if (position === "before") {
+      this.cells.splice(insertIndex, 0, cell);
+    } else if (position === "after") {
+      this.cells.splice(insertIndex + 1, 0, cell);
+    } else {
+      throw new Error(
+        `Invalid position "${position}", expected "before" or "after"`
+      );
+    }
+  }
+
   remove(
     cellId: string,
     options: { recursive: boolean } = { recursive: false }
